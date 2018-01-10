@@ -86,25 +86,43 @@ public class SimplePanel extends javax.swing.JPanel  implements KeyListener {
     public void paintComponent(Graphics gc) {
         super.paintComponent(gc);
         Graphics2D g2d = (Graphics2D) gc;
+//        Rectangle rcBounds = this.getBounds();
+//        Polygon poly = new Polygon();                    //draw in SimpleEngine
+//        poly.addPoint(rcBounds.width/2, 1); 
+//        poly.addPoint(1, rcBounds.height-1);
+//        poly.addPoint(rcBounds.width-1, rcBounds.height-1);
+//        System.out.println(rcBounds);
+//        g2d.setStroke(new BasicStroke(4.5f));
+//        g2d.setColor(new Color(169,169,169));
+//        g2d.fill(poly);
+//        g2d.setColor(Color.BLACK);
+//        g2d.draw(poly);
 
+//        engine = new SimpleEngine();
+        //Polygon
+        //g2d.draw(engine.getDrawRectangle());
         Polygon poly = engine.getPolygon();
 
         g2d.setStroke(new BasicStroke(4.5f));
-        g2d.setColor(new Color(169, 169, 169));
+        g2d.setColor(Color.BLACK);
         g2d.fill(poly);
         g2d.draw(poly);
 
         //Puck
-        g2d.setColor(Color.WHITE);
+        g2d.setColor(Color.GREEN);
         Ellipse2D.Double circle = new Ellipse2D.Double(engine.getPuck().x, engine.getPuck().y, SimpleEngine.BALLSIZE, SimpleEngine.BALLSIZE);
         g2d.fill(circle);
 
         //Racket
-        g2d.setColor(Color.BLACK);
+        g2d.setColor(Color.GREEN);
         Point[] racket = engine.getRacket();
         g2d.setStroke(new BasicStroke(4.5f));
         g2d.drawLine(racket[0].x, racket[0].y, racket[racket.length - 1].x, racket[racket.length - 1].y);
 
+        
+//        g2d.drawOval(392, 392, 1, 1);
+//        g2d.drawOval(198, 4, 1, 1);
+//        g2d.drawLine(396, 396, 199, 4);
         
     }
 
