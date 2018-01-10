@@ -34,8 +34,6 @@ public final class SimpleEngine {
             this.puckSpeed = 1;
             speedUp = 1;
             this.paddlePosition = 165;
-            //this.puckSpeed = (oldPosition - paddlePosition) / (oldTimestamp - paddleTimestamp);
-
         }
     }
 
@@ -50,12 +48,9 @@ public final class SimpleEngine {
 
             // Roughly 18 lines of implementation
             this.polyCenter = new Point2D.Float(200, 200);
-            Game g = new Game(polyCenter);
-
             this.drawRectangle = new Rectangle2D.Float(0, 0, 200, 200);
             this.rectCenter = new Point2D.Float(drawRectangle.width / 2, drawRectangle.height / 2);
             this.gamePath = new Path2D.Float(drawRectangle);
-            System.out.println(gamePath.getBounds2D());
 
         }
     }
@@ -68,8 +63,9 @@ public final class SimpleEngine {
     public static final float PI = 3.141593f;
     public static final int RACKETSPEED = 2;
     public static boolean first = true;
-    public int xTemp = (int) (Math.random() * 5) * ((Math.random() > 0.49) ? 1 : -1);
-    public int yTemp = (int) (Math.random() * 5) * ((Math.random() > 0.49) ? 1 : -1);
+    public int xTemp = -3;
+    public int yTemp = 2;
+    public int leben;
     public float velX = xTemp / sqrt((xTemp * xTemp) + (yTemp * yTemp));
     public float velY = yTemp / sqrt((xTemp * xTemp) + (yTemp * yTemp));
     public int betrag = (int) ((velX * velX) + (velY * velY));
@@ -80,6 +76,7 @@ public final class SimpleEngine {
         // Roughly 2 lines of implementation
         this.court = new Court();
         this.game = new Game(this.court.polyCenter);
+        this.leben = 3;
     }
 
     private float sin(float angle) {
@@ -104,7 +101,7 @@ public final class SimpleEngine {
 
     private float random() {
         // Roughly 1 lines of implementation
-        return (float) Math.random();
+        return (float) Math.random()*3 -2;
     }
 
     private float round(float angle) {
@@ -114,7 +111,7 @@ public final class SimpleEngine {
 
     private float toDegrees(float angle) {
         // Roughly 1 lines of implementation
-        return (float) (180 / PI) * angle;
+        return (float) Math.toDegrees(angle);
     }
 
     public void speedUp(float speedUp) {
@@ -124,12 +121,11 @@ public final class SimpleEngine {
 
     public void step(int id) {
         // Roughly 45 lines of implementation
-        if (first) {
-            game.puckPoint.x += Math.random() * 2;
-            game.puckPoint.y += Math.random() * 2;
-            first = false;
-        }
-
+        float puckY = getPuck().y;
+        float puckX = getPuck().x;
+        Point[] racket = getRacket();
+        
+        //turn Polygon int 2 Border Lines, Left and Right
         int minX = getPolygon().getBounds().x;
         int minY = getPolygon().getBounds().y;
         int height = getPolygon().getBounds().height + minX;
@@ -139,30 +135,39 @@ public final class SimpleEngine {
         Point leftU = new Point(minX, height);
         Line2D left = new Line2D.Float(midO, leftU);
         Line2D right = new Line2D.Float(midO, rightU);
-//         System.out.println(getPolygon().getBounds());
+        Line2D puckLine = new Line2D.Float(getPuck(), new Point.Float(puckX + velX + BALLSIZE, puckY + velY + BALLSIZE));
+        Line2D racketline = new Line2D.Float(new Point(racket[0].x - RACKETSPEED, racket[0].y), new Point(racket[racket.length - 1].x + RACKETSPEED, racket[racket.length - 1].y));
+        
+        //initialize again if Lifes are left
+        if (first) {
+            game.puckPoint.x = 200;
+            game.puckPoint.y = 200; 
+            xTemp = (int) random();
+            yTemp = (int) random();
+            first = false;
+        }
 
-        //
-        float puckY = getPuck().y;
-        float puckX = getPuck().x;
+        //if puck on Racket then it is reflected
         if (puckY + BALLSIZE >= getRacket()[0].y) {
             if (puckX + BALLSIZE >= getRacket()[0].x && puckX <= getRacket()[0].x + RACKETQUOTE) {
                 velY = -velY;
             }
         }
 
-        if (puckY < 0) {
-            velY = -velY;
+        //if puckpoint under the racket than loses one life or Game Over
+        if (puckY + BALLSIZE >= getRacket()[0].y + LINEWIDTH + 5) {
+            if (leben > 0) {
+                leben--;
+                first = true;
+            } else {
+                JOptionPane.showMessageDialog(null, "GAME OVER!");
+                System.exit(0);
+            }
         }
 
-        if (puckY + BALLSIZE >= getDrawRectangle().height) {
-            System.out.println("vorbei");
-//            JOptionPane.showMessageDialog(null, "You failed");
-            System.exit(0);
-        }
-
-        Line2D puckLine = new Line2D.Float(getPuck(), new Point.Float(puckX + velX + BALLSIZE, puckY + velY + BALLSIZE));
+        
+        //if intersects right Bound of Polygon
         if (puckLine.intersectsLine(right)) {
-            game.puckPoint.x -= 5;
             float xDifferenz = (float) (right.getX2() - right.getX1());
             float yDifferenz = (float) (right.getY2() - right.getY1());
 
@@ -185,7 +190,6 @@ public final class SimpleEngine {
             float intersectDegree = toDegrees((float) Math.acos((dotProduct) / (normRight * normPuck)));
 
             float newDegree;
-//            float outputIncline = 1f;
 
             if (intersectDegree < 90) {
                 newDegree = puckDegree + 2 * intersectDegree;
@@ -207,17 +211,14 @@ public final class SimpleEngine {
                 newY = -outputIncline;
             }
 
-//            outputIncline *= (float) Math.tan((newDegree * Math.PI) / 180);
-//            float newY = -outputIncline;
             float newX = -1f;
             float betrag = sqrt((newY * newY) + (newX * newX));
             velX = newX / betrag;
             velY = newY / betrag;
-            ;
         }
 
+        //if intersects Left Bound of Polygon 
         if (puckLine.intersectsLine(left)) {
-            game.puckPoint.x += 5;
             float xDifferenz = (float) (left.getX2() - left.getX1());
             float yDifferenz = (float) (left.getY2() - left.getY1());
             float[] vectorLeft = {xDifferenz, yDifferenz};
@@ -261,33 +262,24 @@ public final class SimpleEngine {
                 newY = -outputIncline;
             }
 
-//            outputIncline *= (float) Math.tan((newDegree * Math.PI) / 180);
-//            float newY = -outputIncline;
+
             float newX = 1f;
             float betrag = sqrt((newY * newY) + (newX * newX));
             velX = newX / betrag;
             velY = newY / betrag;
-            ;
         }
 
         //change Puck in Game
         game.puckPoint.x += velX;
         game.puckPoint.y += velY;
 
-        Point[] racket = getRacket();
+        
 
-        //racket um Racketspeed größer da sonst aus dem Fenster
-        Line2D racketline = new Line2D.Float(new Point(racket[0].x - RACKETSPEED, racket[0].y), new Point(racket[racket.length - 1].x + RACKETSPEED, racket[racket.length - 1].y));
-        //Polygon Linien
-
-        //Rectangle r = new Rectangle(racket[0].x, racket[0].y, RACKETQUOTE , 10);
-//                 if(getPolygon().intersects(r))
+        //if KeyListener gets Left or Right Key than Racket moves 
         if (id == KeyEvent.VK_RIGHT) {
-//            if(game.paddlePosition < this.getBorderPoint(350).x) {
             if (!racketline.intersectsLine(right)) {
                 game.paddlePosition += RACKETSPEED;
             }
-//            }
         } else if (id == KeyEvent.VK_LEFT) {
             if (!racketline.intersectsLine(left)) {
                 game.paddlePosition -= RACKETSPEED;

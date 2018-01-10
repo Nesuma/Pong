@@ -9,13 +9,18 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.Ellipse2D;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.Timer;
 
 /**
  *
  * @author Peter Heusch
  */
-public class SimplePanel extends javax.swing.JPanel  implements KeyListener {
+public class SimplePanel extends javax.swing.JPanel implements KeyListener {
 
     public final static int LINEGAP = 4;
     public final static float PI = (float) Math.PI;
@@ -25,12 +30,18 @@ public class SimplePanel extends javax.swing.JPanel  implements KeyListener {
     private Rectangle drawRect;
     private SimpleEngine engine;
     public int id;
+    private BufferedImage image;
 
     /**
      * Creates new form MasterPanel
      */
     public SimplePanel() {
         initComponents();
+        try {
+            image = ImageIO.read(getClass().getResourceAsStream("/heart2.png"));
+        } catch (IOException ex) {
+            Logger.getLogger(SimplePanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
         engine = new SimpleEngine();
         Timer t = new Timer(5, (evt) -> {
             engine.step(id);
@@ -38,7 +49,7 @@ public class SimplePanel extends javax.swing.JPanel  implements KeyListener {
         });
         t.start();
         setFocusable(true);
-        
+
     }
 
     /**
@@ -86,31 +97,38 @@ public class SimplePanel extends javax.swing.JPanel  implements KeyListener {
     public void paintComponent(Graphics gc) {
         super.paintComponent(gc);
         Graphics2D g2d = (Graphics2D) gc;
-
+        Rectangle rcBounds = this.getBounds();
         Polygon poly = engine.getPolygon();
+        Point[] racket = engine.getRacket();
 
+        //draw poly
         g2d.setStroke(new BasicStroke(4.5f));
         g2d.setColor(new Color(169, 169, 169));
         g2d.fill(poly);
         g2d.draw(poly);
 
-        //Puck
+        //draw Puck
         g2d.setColor(Color.WHITE);
         Ellipse2D.Double circle = new Ellipse2D.Double(engine.getPuck().x, engine.getPuck().y, SimpleEngine.BALLSIZE, SimpleEngine.BALLSIZE);
         g2d.fill(circle);
 
-        //Racket
+        //draw Racket
         g2d.setColor(Color.BLACK);
-        Point[] racket = engine.getRacket();
         g2d.setStroke(new BasicStroke(4.5f));
         g2d.drawLine(racket[0].x, racket[0].y, racket[racket.length - 1].x, racket[racket.length - 1].y);
 
-        
+        //draw Lifes
+        String lifes = "Lifes: ";
+        g2d.drawString(lifes, rcBounds.width - 80, 30);
+        for (int i = 0; i < engine.leben; i++) {
+            g2d.drawImage(image, rcBounds.width - (50 - 15 * i), 17, 15, 15, null);
+        }
+
     }
 
-
     @Override
-    public void keyTyped(KeyEvent ke) {}
+    public void keyTyped(KeyEvent ke) {
+    }
 
     @Override
     public void keyPressed(KeyEvent ke) {

@@ -40,11 +40,6 @@ public class SimpleMain {
         };
 
         SwingUtilities.invokeLater(r);
-
-        
-        
-        
-
         
     }
 }
