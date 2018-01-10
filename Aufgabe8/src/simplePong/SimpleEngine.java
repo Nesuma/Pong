@@ -59,12 +59,12 @@ public final class SimpleEngine {
     public static final int RACKETQUOTE = 70;
     public static final int SQUARE_SIZE = 400;
     public static final int BORDER = 4;
-    public static final int LINEWIDTH = 2;
+    public static final int LINEWIDTH = 7;
     public static final float PI = 3.141593f;
     public static final int RACKETSPEED = 2;
     public static boolean first = true;
-    public int xTemp = -3;
-    public int yTemp = 2;
+    public int xTemp = (int) (Math.random() * 5) * ((Math.random() > 0.49) ? 1 : -1);
+    public int yTemp = (int) (Math.random() * 5) * ((Math.random() > 0.49) ? 1 : -1);
     public int leben;
     public float velX = xTemp / sqrt((xTemp * xTemp) + (yTemp * yTemp));
     public float velY = yTemp / sqrt((xTemp * xTemp) + (yTemp * yTemp));
@@ -101,7 +101,7 @@ public final class SimpleEngine {
 
     private float random() {
         // Roughly 1 lines of implementation
-        return (float) Math.random()*3 -2;
+        return (float) Math.random() * 3 - 2;
     }
 
     private float round(float angle) {
@@ -121,10 +121,17 @@ public final class SimpleEngine {
 
     public void step(int id) {
         // Roughly 45 lines of implementation
+        //initialize again if Lifes are left
+        if (first) {
+            game.puckPoint.x = 200;
+            game.puckPoint.y = 200;
+            xTemp = (int) random();
+            yTemp = (int) random();
+            first = false;
+        }
         float puckY = getPuck().y;
         float puckX = getPuck().x;
         Point[] racket = getRacket();
-        
         //turn Polygon int 2 Border Lines, Left and Right
         int minX = getPolygon().getBounds().x;
         int minY = getPolygon().getBounds().y;
@@ -135,27 +142,19 @@ public final class SimpleEngine {
         Point leftU = new Point(minX, height);
         Line2D left = new Line2D.Float(midO, leftU);
         Line2D right = new Line2D.Float(midO, rightU);
-        Line2D puckLine = new Line2D.Float(getPuck(), new Point.Float(puckX + velX + BALLSIZE, puckY + velY + BALLSIZE));
+
         Line2D racketline = new Line2D.Float(new Point(racket[0].x - RACKETSPEED, racket[0].y), new Point(racket[racket.length - 1].x + RACKETSPEED, racket[racket.length - 1].y));
-        
-        //initialize again if Lifes are left
-        if (first) {
-            game.puckPoint.x = 200;
-            game.puckPoint.y = 200; 
-            xTemp = (int) random();
-            yTemp = (int) random();
-            first = false;
-        }
+        Line2D puckLine = new Line2D.Float(getPuck(), new Point.Float(puckX + velX + BALLSIZE, puckY + velY + BALLSIZE));
 
         //if puck on Racket then it is reflected
-        if (puckY + BALLSIZE >= getRacket()[0].y) {
-            if (puckX + BALLSIZE >= getRacket()[0].x && puckX <= getRacket()[0].x + RACKETQUOTE) {
+        if (puckY + BALLSIZE >= racket[0].y) {
+            if (puckX + BALLSIZE >= racket[0].x && puckX <= racket[0].x + RACKETQUOTE) {
                 velY = -velY;
             }
         }
 
         //if puckpoint under the racket than loses one life or Game Over
-        if (puckY + BALLSIZE >= getRacket()[0].y + LINEWIDTH + 5) {
+        if (puckY + BALLSIZE >= racket[0].y + LINEWIDTH) {
             if (leben > 0) {
                 leben--;
                 first = true;
@@ -165,7 +164,6 @@ public final class SimpleEngine {
             }
         }
 
-        
         //if intersects right Bound of Polygon
         if (puckLine.intersectsLine(right)) {
             float xDifferenz = (float) (right.getX2() - right.getX1());
@@ -262,7 +260,6 @@ public final class SimpleEngine {
                 newY = -outputIncline;
             }
 
-
             float newX = 1f;
             float betrag = sqrt((newY * newY) + (newX * newX));
             velX = newX / betrag;
@@ -272,8 +269,6 @@ public final class SimpleEngine {
         //change Puck in Game
         game.puckPoint.x += velX;
         game.puckPoint.y += velY;
-
-        
 
         //if KeyListener gets Left or Right Key than Racket moves 
         if (id == KeyEvent.VK_RIGHT) {
@@ -318,8 +313,6 @@ public final class SimpleEngine {
 
     public Point[] getBorderLine(int i) {
         // Roughly 2 lines of implementation
-//        Point[] p = getPolygon();
-//        return new Point[i]; 
         Polygon p = getPolygon();
         throw new UnsupportedOperationException("Not yet implemented");
     }
@@ -345,7 +338,6 @@ public final class SimpleEngine {
 
     public Point getBorderPoint(int i) {
         // Roughly 5 lines of implementation
-
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
