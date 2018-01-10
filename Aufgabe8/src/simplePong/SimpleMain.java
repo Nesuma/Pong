@@ -40,14 +40,7 @@ public class SimpleMain {
         };
 
         SwingUtilities.invokeLater(r);
-//        SimplePanel test = new SimplePanel();
-//        JFrame jp1 = new JFrame();
-//        
-//        
-//        jp1.getContentPane().add(a, BorderLayout.CENTER);
-//        jp1.setSize(new Dimension(500, 500));
-//        jp1.setResizable(false);
-//        jp1.setVisible(true);  
+
         
         
         
