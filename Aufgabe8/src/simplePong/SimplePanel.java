@@ -8,6 +8,8 @@ package simplePong;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.awt.geom.Ellipse2D;
 import javax.swing.Timer;
 
@@ -15,7 +17,7 @@ import javax.swing.Timer;
  *
  * @author Peter Heusch
  */
-public class SimplePanel extends javax.swing.JPanel  implements KeyListener {
+public class SimplePanel extends javax.swing.JPanel implements KeyListener, MouseMotionListener {
 
     public final static int LINEGAP = 4;
     public final static float PI = (float) Math.PI;
@@ -38,7 +40,7 @@ public class SimplePanel extends javax.swing.JPanel  implements KeyListener {
         });
         t.start();
         setFocusable(true);
-        
+
     }
 
     /**
@@ -104,8 +106,11 @@ public class SimplePanel extends javax.swing.JPanel  implements KeyListener {
         Polygon poly = engine.getPolygon();
 
         g2d.setStroke(new BasicStroke(4.5f));
-        g2d.setColor(Color.BLACK);
-        g2d.fill(poly);
+
+        g2d.setColor(Color.GREEN);
+        g2d.draw(poly);
+
+        this.setBackground(Color.BLACK);
         g2d.draw(poly);
 
         //Puck
@@ -119,16 +124,14 @@ public class SimplePanel extends javax.swing.JPanel  implements KeyListener {
         g2d.setStroke(new BasicStroke(4.5f));
         g2d.drawLine(racket[0].x, racket[0].y, racket[racket.length - 1].x, racket[racket.length - 1].y);
 
-        
 //        g2d.drawOval(392, 392, 1, 1);
 //        g2d.drawOval(198, 4, 1, 1);
 //        g2d.drawLine(396, 396, 199, 4);
-        
     }
 
-
     @Override
-    public void keyTyped(KeyEvent ke) {}
+    public void keyTyped(KeyEvent ke) {
+    }
 
     @Override
     public void keyPressed(KeyEvent ke) {
@@ -142,6 +145,21 @@ public class SimplePanel extends javax.swing.JPanel  implements KeyListener {
         id = 0;
     }
 
+    @Override
+    public void mouseDragged(MouseEvent e) {
+        id = e.getX();
+
+        this.repaint();
+
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        id = e.getX();
+
+        this.repaint();
+
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables

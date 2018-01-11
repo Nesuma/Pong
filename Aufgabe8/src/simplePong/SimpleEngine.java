@@ -68,8 +68,8 @@ public final class SimpleEngine {
     public static final float PI = 3.141593f;
     public static final int RACKETSPEED = 2;
     public static boolean first = true;
-    public int xTemp = (int) (Math.random() * 5) * ((Math.random() > 0.49) ? 1 : -1);
-    public int yTemp = (int) (Math.random() * 5) * ((Math.random() > 0.49) ? 1 : -1);
+    public int xTemp = (int) ((Math.random() * 5) + 1) * ((Math.random() > 0.49) ? 1 : -1);
+    public int yTemp = (int) ((Math.random() * 5) + 1) * ((Math.random() > 0.49) ? 1 : -1);
     public float velX = xTemp / sqrt((xTemp * xTemp) + (yTemp * yTemp));
     public float velY = yTemp / sqrt((xTemp * xTemp) + (yTemp * yTemp));
     public int betrag = (int) ((velX * velX) + (velY * velY));
@@ -152,11 +152,12 @@ public final class SimpleEngine {
 
         if (puckY < 0) {
             velY = -velY;
+            velX = 0;
         }
 
-        if (puckY + BALLSIZE >= getDrawRectangle().height) {
+        if (puckY + BALLSIZE >= 390) {
             System.out.println("vorbei");
-//            JOptionPane.showMessageDialog(null, "You failed");
+            JOptionPane.showMessageDialog(null, "GAME OVER");
             System.exit(0);
         }
 
@@ -293,11 +294,14 @@ public final class SimpleEngine {
                 game.paddlePosition -= RACKETSPEED;
             }
         }
+        if (getPolygon().contains(new Point(id - 35, racket[0].y)) && getPolygon().contains(new Point(id + 35, racket[0].y))) {
+            game.paddlePosition = id - 35;
+        }
     }
 
     public Point[] getRacket() {
         // Roughly 12 lines of implementation
-        int racketplace = 360;          //y-Koordinate
+        int racketplace = 370;          //y-Koordinate
         Point[] p2 = new Point[70];   // use Racketquote
         for (int i = 0; i < p2.length; i++) {
             p2[i] = new Point((int) game.paddlePosition + i, racketplace);   //need Bound for x-Koordinate

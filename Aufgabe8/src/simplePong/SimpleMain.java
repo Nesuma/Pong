@@ -7,6 +7,7 @@ package simplePong;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Polygon;
+import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
@@ -25,19 +26,23 @@ public class SimpleMain {
                 JFrame frame = new JFrame();
                 SimplePanel a = new SimplePanel();
 
-                frame.setUndecorated(true);
-                Polygon p = new Polygon(new int[]{0, 200, 400}, new int[]{400, 0, 400}, 3);
-                frame.setShape(p);
+//                frame.setUndecorated(true);
+//                Polygon p = new Polygon(new int[]{0, 200, 400}, new int[]{400, 0, 400}, 3);
+//                frame.setShape(p);
 
                 frame.getContentPane().add(a);
+                frame.setBackground(Color.BLACK);
+               
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
                 a.addKeyListener(a);
+                a.addMouseMotionListener(a);
                 a.setFocusable(true);
                 a.requestFocusInWindow();
+                
 
                 frame.setResizable(false);
-                frame.setSize(new Dimension(400, 400));
+                frame.setSize(new Dimension(400, 400+20));
                 frame.setVisible(true);
             }
 
